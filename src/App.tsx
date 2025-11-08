@@ -67,10 +67,11 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-          <div className="text-white text-xl font-medium">Loading AI Observatory...</div>
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-slate-700 border-t-cyan-400 mb-6"></div>
+          <div className="text-white text-xl font-semibold">Initializing Lighthouse</div>
+          <div className="text-slate-400 text-sm mt-2">Loading your AI observatory...</div>
         </div>
       </div>
     );
@@ -79,15 +80,15 @@ function App() {
   return (
     <div className="min-h-screen text-white">
       {/* Header */}
-      <header className="glass-card border-b border-gray-700/50 px-6 py-5 backdrop-blur-md">
+      <header className="glass-card border-b border-slate-700/30 px-8 py-6 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">🔍 AI Observatory</h1>
-            <p className="text-gray-400 text-sm mt-1">Real-time AI monitoring & cost tracking</p>
+            <h1 className="text-4xl font-bold gradient-text tracking-tight">Lighthouse</h1>
+            <p className="text-slate-400 text-sm mt-1.5 font-medium">AI observability platform • Real-time monitoring & analytics</p>
           </div>
           <button
             onClick={handleClearTraces}
-            className="px-5 py-2.5 bg-red-600/90 hover:bg-red-600 rounded-lg transition-all shadow-lg hover:shadow-red-500/50 font-medium"
+            className="btn-danger text-sm"
           >
             Clear All Traces
           </button>
@@ -95,7 +96,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
         {/* Stats Panel */}
         <StatsPanel stats={stats} />
         <ApiKeyManager />

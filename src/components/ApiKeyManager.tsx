@@ -78,60 +78,72 @@ export default function ApiKeyManager() {
   };
 
   return (
-    <div className="glass-card rounded-xl p-6 shadow-xl">
-      <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-        🔑 API Key Settings
-      </h2>
-
-      <p className="text-sm text-gray-400 mb-4">
-        Add your own Gemini API key to use your own credits. Your key is stored securely and only used for your queries.
-      </p>
+    <div className="glass-card rounded-2xl p-8 shadow-xl">
+      <div className="mb-6">
+        <h2 className="card-header">API Key Configuration</h2>
+        <p className="card-subtitle mt-2">
+          Configure your Gemini API key to use your own credits. Keys are encrypted and stored securely.
+        </p>
+      </div>
 
       {hasKey && (
-        <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-medium text-blue-300">Current Key</div>
-              <div className="text-xs text-gray-400 font-mono mt-1">{maskedKey}</div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-blue-300 mb-1.5">Active API Key</div>
+              <div className="text-xs text-slate-400 font-mono bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700/50">
+                {maskedKey}
+              </div>
             </div>
             <button
               onClick={handleDelete}
-              className="text-xs text-red-400 hover:text-red-300 px-3 py-1.5 rounded-lg hover:bg-red-500/10 transition"
+              className="ml-4 text-sm text-red-400 hover:text-red-300 px-4 py-2 rounded-lg hover:bg-red-500/10 transition-all border border-red-500/20 hover:border-red-500/40 font-medium"
             >
-              Delete
+              Remove
             </button>
           </div>
         </div>
       )}
 
       {message && (
-        <div className={`mb-4 p-3 rounded-lg border ${
+        <div className={`mb-6 p-4 rounded-xl border backdrop-blur-sm ${
           message.type === 'success'
-            ? 'bg-green-500/10 border-green-500/30 text-green-300'
+            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
             : 'bg-red-500/10 border-red-500/30 text-red-300'
         }`}>
-          {message.text}
+          <div className="flex items-center gap-2">
+            {message.type === 'success' ? (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
+            <span className="font-medium">{message.text}</span>
+          </div>
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-4">
+      <form onSubmit={handleSave} className="space-y-5">
         <div>
-          <label className="text-sm text-gray-400 mb-2 block">Gemini API Key</label>
+          <label className="text-sm text-slate-300 mb-2.5 block font-semibold">Gemini API Key</label>
           <input
             type="password"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
-            placeholder="Enter your Gemini API key (starts with AIza...)"
-            className="w-full bg-gray-900/50 border border-gray-700/50 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all backdrop-blur-sm"
+            placeholder="AIzaSy..."
+            className="input-field"
             disabled={loading}
           />
-          <div className="text-xs text-gray-500 mt-1">
-            Get your key from{' '}
+          <div className="text-xs text-slate-500 mt-2.5">
+            Get your API key from{' '}
             <a
               href="https://makersuite.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline"
+              className="text-blue-400 hover:text-blue-300 underline font-medium"
             >
               Google AI Studio
             </a>
@@ -141,9 +153,21 @@ export default function ApiKeyManager() {
         <button
           type="submit"
           disabled={loading || !apiKey.trim()}
-          className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-all shadow-lg hover:shadow-green-500/50 disabled:shadow-none"
+          className="btn-success w-full"
         >
-          {loading ? 'Testing & Saving...' : hasKey ? 'Update API Key' : 'Save API Key'}
+          {loading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Validating & Saving...
+            </span>
+          ) : hasKey ? (
+            'Update API Key'
+          ) : (
+            'Save API Key'
+          )}
         </button>
       </form>
     </div>

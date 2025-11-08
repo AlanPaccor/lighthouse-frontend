@@ -18,38 +18,49 @@ export default function CostChart({ traces }: CostChartProps) {
     }));
 
   return (
-    <div className="glass-card rounded-xl p-6 shadow-xl">
-      <h2 className="text-2xl font-bold mb-5 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-        📈 Cost Over Time
-      </h2>
+    <div className="glass-card rounded-2xl p-8 shadow-xl">
+      <div className="mb-6">
+        <h2 className="card-header">Cost Analytics</h2>
+        <p className="card-subtitle mt-2">
+          Track query costs over time (last 20 queries)
+        </p>
+      </div>
       
       {chartData.length === 0 ? (
-        <div className="h-64 flex flex-col items-center justify-center text-gray-400">
-          <div className="text-4xl mb-3">📊</div>
-          <div>No data yet</div>
+        <div className="h-64 flex flex-col items-center justify-center text-slate-400">
+          <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <div className="font-medium">No data available</div>
+          <div className="text-xs text-slate-500 mt-1">Execute queries to see cost trends</div>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={320}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#475569" opacity={0.2} />
             <XAxis 
               dataKey="index" 
-              stroke="#9CA3AF" 
-              style={{ fontSize: '12px' }}
+              stroke="#94a3b8" 
+              style={{ fontSize: '11px', fontWeight: 500 }}
+              tick={{ fill: '#94a3b8' }}
             />
             <YAxis 
-              stroke="#9CA3AF" 
-              style={{ fontSize: '12px' }}
+              stroke="#94a3b8" 
+              style={{ fontSize: '11px', fontWeight: 500 }}
+              tick={{ fill: '#94a3b8' }}
             />
             <Tooltip
               contentStyle={{ 
-                backgroundColor: 'rgba(31, 41, 55, 0.95)', 
-                border: '1px solid rgba(55, 65, 81, 0.5)',
-                borderRadius: '8px',
-                backdropFilter: 'blur(10px)'
+                backgroundColor: 'rgba(15, 23, 42, 0.95)', 
+                border: '1px solid rgba(51, 65, 85, 0.5)',
+                borderRadius: '12px',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)'
               }}
-              labelStyle={{ color: '#9CA3AF', fontWeight: 'bold' }}
-              itemStyle={{ color: '#60A5FA' }}
+              labelStyle={{ color: '#cbd5e1', fontWeight: 600, fontSize: '12px' }}
+              itemStyle={{ color: '#60a5fa', fontSize: '12px' }}
             />
             <Line 
               type="monotone" 
@@ -57,13 +68,14 @@ export default function CostChart({ traces }: CostChartProps) {
               stroke="url(#colorGradient)" 
               strokeWidth={3} 
               name="Cost (μ$)"
-              dot={{ fill: '#60A5FA', r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ fill: '#60a5fa', r: 5, strokeWidth: 2, stroke: '#1e3a8a' }}
+              activeDot={{ r: 7, strokeWidth: 2, stroke: '#1e3a8a' }}
             />
             <defs>
               <linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#60A5FA" />
-                <stop offset="100%" stopColor="#A78BFA" />
+                <stop offset="0%" stopColor="#60a5fa" />
+                <stop offset="50%" stopColor="#818cf8" />
+                <stop offset="100%" stopColor="#a78bfa" />
               </linearGradient>
             </defs>
           </LineChart>
