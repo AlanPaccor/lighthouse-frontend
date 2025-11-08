@@ -9,22 +9,24 @@ import ConfidenceChart from './components/ConfidenceChart';
 import DatabaseConnectionManager from './components/DatabaseConnectionManager';
 import DatabaseBrowser from './components/DatabaseBrowser';
 import ApiKeyManager from './components/ApiKeyManager';
+import ProjectManager from './components/ProjectManager';
 
 function App() {
   const [traces, setTraces] = useState<Trace[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedDbConnectionId, setSelectedDbConnectionId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedProjectId]);
 
   const loadData = async () => {
     try {
       const [tracesData, statsData] = await Promise.all([
-        api.getTraces(),
-        api.getStats(),
+        api.getTraces(selectedProjectId),
+        api.getStats(selectedProjectId),
       ]);
       setTraces(tracesData);
       setStats(statsData);
@@ -95,6 +97,12 @@ function App() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-8 space-y-8">
         <StatsPanel stats={stats} />
+        
+        <ProjectManager 
+          onSelectProject={setSelectedProjectId}
+          selectedProjectId={selectedProjectId}
+        />
+        
         <ApiKeyManager />
 
         <DatabaseBrowser connectionId={selectedDbConnectionId} />

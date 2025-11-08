@@ -5,11 +5,15 @@ import type { Trace, Stats } from '../types/Trace';
 export const BASE_URL = 'http://localhost:8080';
 export const TRACES_BASE_URL = `${BASE_URL}/api/traces`;
 export const DB_CONNECTIONS_BASE_URL = `${BASE_URL}/api/db-connections`;
+export const PROJECTS_BASE_URL = `${BASE_URL}/api/projects`;
 
 export const api = {
-  // Get all traces
-  getTraces: async (): Promise<Trace[]> => {
-    const response = await fetch(TRACES_BASE_URL);
+  // Get all traces (with optional project filter)
+  getTraces: async (projectId?: string | null): Promise<Trace[]> => {
+    const url = projectId 
+      ? `${TRACES_BASE_URL}?projectId=${projectId}`
+      : TRACES_BASE_URL;
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch traces');
     return response.json();
   },
@@ -36,9 +40,12 @@ export const api = {
     return response.json();
   },
 
-  // Get stats
-  getStats: async (): Promise<Stats> => {
-    const response = await fetch(`${TRACES_BASE_URL}/stats`);
+  // Get stats (with optional project filter)
+  getStats: async (projectId?: string | null): Promise<Stats> => {
+    const url = projectId
+      ? `${TRACES_BASE_URL}/stats?projectId=${projectId}`
+      : `${TRACES_BASE_URL}/stats`;
+    const response = await fetch(url);
     if (!response.ok) throw new Error('Failed to fetch stats');
     return response.json();
   },
@@ -122,5 +129,49 @@ export const dbConnectionsApi = {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete connection');
+  },
+};
+
+// Projects API
+export interface Project {
+  id: string;
+  name: string;
+  apiKey: string;
+  description?: string;
+  createdAt: string;
+}
+
+export const projectsApi = {
+  // Get all projects
+  getAll: async (): Promise<Project[]> => {
+    const response = await fetch(PROJECTS_BASE_URL);
+    if (!response.ok) throw new Error('Failed to fetch projects');
+    return response.json();
+  },
+
+  // Get single project
+  getById: async (id: string): Promise<Project> => {
+    const response = await fetch(`${PROJECTS_BASE_URL}/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch project');
+    return response.json();
+  },
+
+  // Create new project
+  create: async (project: { name: string; description?: string }): Promise<Project> => {
+    const response = await fetch(PROJECTS_BASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(project),
+    });
+    if (!response.ok) throw new Error('Failed to create project');
+    return response.json();
+  },
+
+  // Delete project
+  delete: async (id: string): Promise<void> => {
+    const response = await fetch(`${PROJECTS_BASE_URL}/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete project');
   },
 };
