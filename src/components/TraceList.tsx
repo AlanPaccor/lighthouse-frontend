@@ -10,46 +10,65 @@ export default function TraceList({ traces }: TraceListProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
-    <div className="bg-gray-800 rounded-lg border border-gray-700">
-      <div className="p-6 border-b border-gray-700">
-        <h2 className="text-xl font-bold">📋 Recent Traces</h2>
-        <p className="text-sm text-gray-400 mt-1">
+    <div className="glass-card rounded-xl shadow-xl">
+      <div className="p-6 border-b border-gray-700/50">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          📋 Recent Traces
+        </h2>
+        <p className="text-sm text-gray-400 mt-2">
           {traces.length} {traces.length === 1 ? 'query' : 'queries'} tracked
         </p>
       </div>
 
-      <div className="divide-y divide-gray-700 max-h-[600px] overflow-y-auto">
+      <div className="divide-y divide-gray-700/50 max-h-[600px] overflow-y-auto">
         {traces.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">
-            No traces yet. Try sending a query!
+          <div className="p-12 text-center">
+            <div className="text-4xl mb-3">🔍</div>
+            <div className="text-gray-400">No traces yet. Try sending a query!</div>
           </div>
         ) : (
           traces.map((trace) => (
             <div
               key={trace.id}
               onClick={() => setSelectedTrace(trace)}
-              className="p-4 hover:bg-gray-700 cursor-pointer transition"
+              className="p-5 hover:bg-gray-700/30 cursor-pointer transition-all border-l-4 border-transparent hover:border-blue-500"
             >
-              <div className="flex items-start justify-between mb-2">
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white truncate">
+                  <div className="text-sm font-semibold text-white truncate mb-1">
                     {trace.prompt}
                   </div>
-                  <div className="text-xs text-gray-400 mt-1">
+                  <div className="text-xs text-gray-500">
                     {new Date(trace.createdAt).toLocaleString()}
                   </div>
                 </div>
                 <div className="ml-4 flex items-center gap-2">
-                  <span className="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">
+                  <span className="text-xs bg-gradient-to-r from-blue-600 to-purple-600 text-white px-3 py-1 rounded-full font-medium shadow-md">
                     {trace.provider}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs text-gray-400">
-                <span>💰 ${trace.costUsd.toFixed(6)}</span>
-                <span>🪙 {trace.tokensUsed} tokens</span>
-                <span>⚡ {trace.latencyMs}ms</span>
+              {/* Response Preview */}
+              {trace.response && (
+                <div className="mt-3 p-3 bg-gray-900/50 rounded-lg border border-gray-700/50">
+                  <div className="text-xs text-gray-400 mb-1.5 font-medium">Response:</div>
+                  <div className="text-sm text-gray-300 line-clamp-2">
+                    {trace.response}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-center gap-5 text-xs mt-3">
+                <span className="flex items-center gap-1 text-green-400 font-medium">
+                  💰 ${trace.costUsd.toFixed(6)}
+                </span>
+                <span className="flex items-center gap-1 text-blue-400 font-medium">
+                  🪙 {trace.tokensUsed} tokens
+                </span>
+                <span className="flex items-center gap-1 text-purple-400 font-medium">
+                  ⚡ {trace.latencyMs}ms
+                </span>
               </div>
             </div>
           ))
@@ -59,15 +78,17 @@ export default function TraceList({ traces }: TraceListProps) {
       {/* Modal for trace details */}
       {selectedTrace && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in"
           onClick={() => setSelectedTrace(null)}
         >
           <div
-            className="bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            className="glass-card rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl border border-gray-700/50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-gray-700">
-              <h3 className="text-xl font-bold">Trace Details</h3>
+            <div className="p-6 border-b border-gray-700/50">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Trace Details
+              </h3>
             </div>
             <div className="p-6 space-y-4">
               <div>
@@ -101,10 +122,10 @@ export default function TraceList({ traces }: TraceListProps) {
                 </div>
               </div>
             </div>
-            <div className="p-6 border-t border-gray-700">
+            <div className="p-6 border-t border-gray-700/50">
               <button
                 onClick={() => setSelectedTrace(null)}
-                className="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded transition"
+                className="w-full bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 py-3 rounded-xl transition-all font-medium shadow-lg"
               >
                 Close
               </button>

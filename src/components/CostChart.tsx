@@ -18,24 +18,54 @@ export default function CostChart({ traces }: CostChartProps) {
     }));
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-      <h2 className="text-xl font-bold mb-4">📈 Cost Over Time</h2>
+    <div className="glass-card rounded-xl p-6 shadow-xl">
+      <h2 className="text-2xl font-bold mb-5 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        📈 Cost Over Time
+      </h2>
       
       {chartData.length === 0 ? (
-        <div className="h-64 flex items-center justify-center text-gray-400">
-          No data yet
+        <div className="h-64 flex flex-col items-center justify-center text-gray-400">
+          <div className="text-4xl mb-3">📊</div>
+          <div>No data yet</div>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={250}>
+        <ResponsiveContainer width="100%" height={280}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="index" stroke="#9CA3AF" />
-            <YAxis stroke="#9CA3AF" />
-            <Tooltip
-              contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
-              labelStyle={{ color: '#9CA3AF' }}
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+            <XAxis 
+              dataKey="index" 
+              stroke="#9CA3AF" 
+              style={{ fontSize: '12px' }}
             />
-            <Line type="monotone" dataKey="cost" stroke="#3B82F6" strokeWidth={2} name="Cost (μ$)" />
+            <YAxis 
+              stroke="#9CA3AF" 
+              style={{ fontSize: '12px' }}
+            />
+            <Tooltip
+              contentStyle={{ 
+                backgroundColor: 'rgba(31, 41, 55, 0.95)', 
+                border: '1px solid rgba(55, 65, 81, 0.5)',
+                borderRadius: '8px',
+                backdropFilter: 'blur(10px)'
+              }}
+              labelStyle={{ color: '#9CA3AF', fontWeight: 'bold' }}
+              itemStyle={{ color: '#60A5FA' }}
+            />
+            <Line 
+              type="monotone" 
+              dataKey="cost" 
+              stroke="url(#colorGradient)" 
+              strokeWidth={3} 
+              name="Cost (μ$)"
+              dot={{ fill: '#60A5FA', r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+            <defs>
+              <linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#60A5FA" />
+                <stop offset="100%" stopColor="#A78BFA" />
+              </linearGradient>
+            </defs>
           </LineChart>
         </ResponsiveContainer>
       )}
