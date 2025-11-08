@@ -6,6 +6,8 @@ import TraceList from './components/TraceList.tsx';
 import StatsPanel from './components/StatsPanel.tsx';
 import ChatInterface from './components/ChatInterface.tsx';
 import CostChart from './components/CostChart.tsx';
+import DocumentManager from './components/DocumentManager';
+
 
 function App() {
   const [traces, setTraces] = useState<Trace[]>([]);
@@ -59,6 +61,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
+      <DocumentManager />
       {/* Header */}
       <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
