@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { api } from './services/api';
+import { useState, useEffect, useRef } from 'react';
+import { api, dbConnectionsApi } from './services/api';
 import type { Trace, Stats } from './types/Trace';
 import TraceList from './components/TraceList';
 import StatsPanel from './components/StatsPanel';
@@ -17,12 +17,59 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [selectedDbConnectionId, setSelectedDbConnectionId] = useState<string | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [dbConnections, setDbConnections] = useState<any[]>([]);
+  const [checkingTraces, setCheckingTraces] = useState<Set<string>>(new Set());
+  const checkingTracesRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    loadDbConnections();
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, [selectedProjectId]);
+  }, [selectedProjectId, dbConnections.length]);
 
-  const loadData = async () => {
+  // Poll for new traces every 5 seconds for auto-refresh
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Silently refresh data without showing loading state
+      const refreshData = async () => {
+        try {
+          const [tracesData, statsData] = await Promise.all([
+            api.getTraces(selectedProjectId),
+            api.getStats(selectedProjectId),
+          ]);
+          setTraces(tracesData);
+          setStats(statsData);
+          // Check for hallucinations on new traces
+          checkTracesForHallucinations(tracesData);
+        } catch (error) {
+          console.error('Failed to refresh data:', error);
+        }
+      };
+      refreshData();
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedProjectId, dbConnections.length]);
+
+  const loadDbConnections = async () => {
+    try {
+      const connections = await dbConnectionsApi.getAll();
+      const connected = connections.filter(c => c.isConnected);
+      setDbConnections(connected);
+      if (!selectedDbConnectionId && connected.length > 0) {
+        setSelectedDbConnectionId(connected[0].id);
+      }
+    } catch (error) {
+      console.error('Failed to load database connections:', error);
+    }
+  };
+
+  const loadData = async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     try {
       const [tracesData, statsData] = await Promise.all([
         api.getTraces(selectedProjectId),
@@ -30,10 +77,62 @@ function App() {
       ]);
       setTraces(tracesData);
       setStats(statsData);
+      checkTracesForHallucinations(tracesData);
     } catch (error) {
       console.error('Failed to load data:', error);
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const checkTracesForHallucinations = async (tracesToCheck: Trace[]) => {
+    // Wait for database connections to load
+    if (dbConnections.length === 0) {
+      await loadDbConnections();
+    }
+
+    const dbConnection = dbConnections.find(c => c.isConnected);
+    if (!dbConnection) {
+      console.log('No connected database available for hallucination detection');
+      return;
+    }
+
+    // Check each trace that doesn't have hallucination data
+    for (const trace of tracesToCheck) {
+      // Skip if already has hallucination data
+      if (trace.hallucinationData) continue;
+      
+      // Skip if already being checked
+      if (checkingTracesRef.current.has(trace.id)) continue;
+      
+      // Skip if no response
+      if (!trace.response || trace.response.trim().length === 0) continue;
+      
+      // Mark as being checked
+      checkingTracesRef.current.add(trace.id);
+      setCheckingTraces(new Set(checkingTracesRef.current));
+      
+      try {
+        console.log(`🔍 Checking hallucinations for trace: ${trace.id}`);
+        const updatedTrace = await api.checkHallucinations(trace.id, dbConnection.id);
+        
+        // Update the trace in state
+        setTraces(prev => prev.map(t => 
+          t.id === trace.id ? updatedTrace : t
+        ));
+        
+        console.log(`✅ Hallucination check completed - Confidence: ${updatedTrace.confidenceScore}%`);
+      } catch (error) {
+        console.error(`❌ Failed to check hallucinations for trace ${trace.id}:`, error);
+      } finally {
+        // Remove from checking set after delay
+        setTimeout(() => {
+          checkingTracesRef.current.delete(trace.id);
+          setCheckingTraces(new Set(checkingTracesRef.current));
+        }, 5000);
+      }
     }
   };
 
@@ -51,6 +150,30 @@ function App() {
       console.log("Query result:", newTrace);
       setTraces((prev) => [newTrace, ...prev]);
       loadData();
+      
+      // If trace doesn't have hallucination data but we have a DB connection, check it
+      if (!newTrace.hallucinationData && dbConnections.length > 0) {
+        const dbConnection = dbConnections.find(c => c.isConnected);
+        if (dbConnection) {
+          checkingTracesRef.current.add(newTrace.id);
+          setCheckingTraces(new Set(checkingTracesRef.current));
+          
+          try {
+            console.log(`🔍 Checking hallucinations for new trace: ${newTrace.id}`);
+            const updatedTrace = await api.checkHallucinations(newTrace.id, dbConnection.id);
+            setTraces((prev) => prev.map(t => t.id === newTrace.id ? updatedTrace : t));
+            console.log(`✅ Hallucination check completed - Confidence: ${updatedTrace.confidenceScore}%`);
+          } catch (error) {
+            console.error('Failed to check hallucinations for new trace:', error);
+          } finally {
+            setTimeout(() => {
+              checkingTracesRef.current.delete(newTrace.id);
+              setCheckingTraces(new Set(checkingTracesRef.current));
+            }, 1000);
+          }
+        }
+      }
+      
       return newTrace;
     } catch (error) {
       console.error("Query failed:", error);
@@ -79,7 +202,6 @@ function App() {
 
   return (
     <div className="min-h-screen text-white">
-      {/* Header */}
       <header className="glass-card border-b border-slate-700/30 px-8 py-6 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
@@ -94,7 +216,6 @@ function App() {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto p-8 space-y-8">
         <StatsPanel stats={stats} />
         
@@ -111,9 +232,7 @@ function App() {
           selectedConnectionId={selectedDbConnectionId}
         />
 
-        {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-          {/* Left: Chat Interface & Cost Chart */}
           <div className="space-y-6 flex flex-col">
             <ChatInterface
               onSubmit={handleQuerySubmit}
@@ -122,13 +241,11 @@ function App() {
             <CostChart traces={traces} />
           </div>
 
-          {/* Right: Query History */}
           <div className="flex flex-col min-h-0">
-            <TraceList traces={traces} />
+            <TraceList traces={traces} checkingTraces={checkingTraces} />
           </div>
         </div>
 
-        {/* Confidence Chart - Full Width */}
         <ConfidenceChart traces={traces} />
       </div>
     </div>

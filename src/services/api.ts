@@ -55,6 +55,17 @@ export const api = {
     const response = await fetch(`${TRACES_BASE_URL}/clear`, { method: 'DELETE' });
     if (!response.ok) throw new Error('Failed to clear traces');
   },
+
+  // Check hallucinations for an existing trace
+  checkHallucinations: async (traceId: string, dbConnectionId: string): Promise<Trace> => {
+    const response = await fetch(`${TRACES_BASE_URL}/${traceId}/check-hallucinations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dbConnectionId }),
+    });
+    if (!response.ok) throw new Error('Failed to check hallucinations');
+    return response.json();
+  },
 };
 
 // Database Connections API

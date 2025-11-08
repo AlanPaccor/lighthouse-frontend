@@ -6,9 +6,10 @@ import HallucinationWarning from './HallucinationWarning';
 
 interface TraceListProps {
   traces: Trace[];
+  checkingTraces?: Set<string>;
 }
 
-export default function TraceList({ traces }: TraceListProps) {
+export default function TraceList({ traces, checkingTraces }: TraceListProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
@@ -61,6 +62,12 @@ export default function TraceList({ traces }: TraceListProps) {
                   <div className="text-sm text-slate-300 line-clamp-2 leading-relaxed">
                     {trace.response}
                   </div>
+                  {!trace.hallucinationData && checkingTraces?.has(trace.id) && (
+                    <div className="mt-3 p-2 bg-blue-500/10 border border-blue-500/30 rounded-lg text-xs text-blue-400 flex items-center gap-2">
+                      <div className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                      Checking for hallucinations...
+                    </div>
+                  )}
                   <HallucinationWarning trace={trace} />
                 </div>
               )}
@@ -70,7 +77,11 @@ export default function TraceList({ traces }: TraceListProps) {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  ${trace.costUsd.toFixed(4)}
+                  {trace.costUsd < 0.0001 && trace.costUsd > 0
+                    ? `$${trace.costUsd.toFixed(6)}`
+                    : trace.costUsd === 0
+                    ? '$0.00'
+                    : `$${trace.costUsd.toFixed(4)}`}
                 </span>
                 <span className="flex items-center gap-2 text-blue-400 font-semibold">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,7 +139,13 @@ export default function TraceList({ traces }: TraceListProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50">
                   <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Cost</div>
-                  <div className="text-2xl font-bold text-emerald-400">${selectedTrace.costUsd.toFixed(4)}</div>
+                  <div className="text-2xl font-bold text-emerald-400">
+                    {selectedTrace.costUsd < 0.0001 && selectedTrace.costUsd > 0
+                      ? `$${selectedTrace.costUsd.toFixed(6)}`
+                      : selectedTrace.costUsd === 0
+                      ? '$0.00'
+                      : `$${selectedTrace.costUsd.toFixed(4)}`}
+                  </div>
                 </div>
                 <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50">
                   <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Tokens</div>
@@ -143,22 +160,40 @@ export default function TraceList({ traces }: TraceListProps) {
                   <div className="text-2xl font-bold text-purple-400">{selectedTrace.provider}</div>
                 </div>
                 {/* Confidence Score Card */}
-                {selectedTrace.confidenceScore !== undefined && (
-                  <div className={`bg-slate-900/40 p-4 rounded-xl border ${
-                    selectedTrace.confidenceScore >= 80 ? 'border-green-500/30' : 
-                    selectedTrace.confidenceScore >= 60 ? 'border-yellow-500/30' : 
-                    'border-red-500/30'
-                  } border-slate-700/50`}>
-                    <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Confidence</div>
-                    <div className={`text-2xl font-bold ${
-                      selectedTrace.confidenceScore >= 80 ? 'text-green-400' : 
-                      selectedTrace.confidenceScore >= 60 ? 'text-yellow-400' : 
-                      'text-red-400'
-                    }`}>
-                      {selectedTrace.confidenceScore.toFixed(0)}%
+                {(() => {
+                  // Extract confidence score from trace or hallucinationData
+                  let confidence: number | undefined = selectedTrace.confidenceScore;
+                  
+                  if (confidence === undefined && selectedTrace.hallucinationData) {
+                    try {
+                      const hallucinationResult = typeof selectedTrace.hallucinationData === 'string' 
+                        ? JSON.parse(selectedTrace.hallucinationData)
+                        : selectedTrace.hallucinationData;
+                      confidence = hallucinationResult.confidenceScore;
+                    } catch (e) {
+                      // Ignore parse errors
+                    }
+                  }
+                  
+                  if (confidence === undefined) return null;
+                  
+                  return (
+                    <div className={`bg-slate-900/40 p-4 rounded-xl border ${
+                      confidence >= 75 ? 'border-green-500/30' : 
+                      confidence >= 50 ? 'border-yellow-500/30' : 
+                      'border-red-500/30'
+                    } border-slate-700/50`}>
+                      <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Confidence</div>
+                      <div className={`text-2xl font-bold ${
+                        confidence >= 75 ? 'text-green-400' : 
+                        confidence >= 50 ? 'text-yellow-400' : 
+                        'text-red-400'
+                      }`}>
+                        {confidence.toFixed(0)}%
+                      </div>
                     </div>
-                  </div>
-                )}
+                  );
+                })()}
               </div>
             </div>
             <div className="p-8 border-t border-slate-700/50">
