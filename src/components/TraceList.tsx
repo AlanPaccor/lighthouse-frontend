@@ -1,6 +1,8 @@
 // src/components/TraceList.tsx
 import type { Trace } from '../types/Trace';
 import { useState } from 'react';
+import HallucinationWarning from './HallucinationWarning';
+
 
 interface TraceListProps {
   traces: Trace[];
@@ -10,15 +12,15 @@ export default function TraceList({ traces }: TraceListProps) {
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
 
   return (
-    <div className="glass-card rounded-2xl shadow-xl">
-      <div className="p-8 border-b border-slate-700/50">
+    <div className="glass-card rounded-2xl shadow-xl flex flex-col h-full">
+      <div className="p-8 border-b border-slate-700/50 flex-shrink-0">
         <h2 className="card-header">Query History</h2>
         <p className="card-subtitle mt-2">
           {traces.length} {traces.length === 1 ? 'query' : 'queries'} tracked
         </p>
       </div>
 
-      <div className="divide-y divide-slate-700/50 max-h-[600px] overflow-y-auto">
+      <div className="divide-y divide-slate-700/50 max-h-[1000px] overflow-y-auto">
         {traces.length === 0 ? (
           <div className="p-16 text-center">
             <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
@@ -59,6 +61,7 @@ export default function TraceList({ traces }: TraceListProps) {
                   <div className="text-sm text-slate-300 line-clamp-2 leading-relaxed">
                     {trace.response}
                   </div>
+                  <HallucinationWarning trace={trace} />
                 </div>
               )}
 
@@ -115,6 +118,12 @@ export default function TraceList({ traces }: TraceListProps) {
                 <div className="bg-slate-900/60 p-4 rounded-xl border border-slate-700/50 whitespace-pre-wrap text-slate-200 font-mono text-sm leading-relaxed max-h-96 overflow-y-auto">
                   {selectedTrace.response}
                 </div>
+                {/* Hallucination Warning inside modal */}
+                {selectedTrace.hallucinationData && (
+                  <div className="mt-4">
+                    <HallucinationWarning trace={selectedTrace} />
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-900/40 p-4 rounded-xl border border-slate-700/50">
@@ -133,6 +142,23 @@ export default function TraceList({ traces }: TraceListProps) {
                   <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Provider</div>
                   <div className="text-2xl font-bold text-purple-400">{selectedTrace.provider}</div>
                 </div>
+                {/* Confidence Score Card */}
+                {selectedTrace.confidenceScore !== undefined && (
+                  <div className={`bg-slate-900/40 p-4 rounded-xl border ${
+                    selectedTrace.confidenceScore >= 80 ? 'border-green-500/30' : 
+                    selectedTrace.confidenceScore >= 60 ? 'border-yellow-500/30' : 
+                    'border-red-500/30'
+                  } border-slate-700/50`}>
+                    <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Confidence</div>
+                    <div className={`text-2xl font-bold ${
+                      selectedTrace.confidenceScore >= 80 ? 'text-green-400' : 
+                      selectedTrace.confidenceScore >= 60 ? 'text-yellow-400' : 
+                      'text-red-400'
+                    }`}>
+                      {selectedTrace.confidenceScore.toFixed(0)}%
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <div className="p-8 border-t border-slate-700/50">

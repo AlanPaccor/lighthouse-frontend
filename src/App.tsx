@@ -1,15 +1,14 @@
-// src/App.tsx
 import { useState, useEffect } from 'react';
 import { api } from './services/api';
 import type { Trace, Stats } from './types/Trace';
-import TraceList from './components/TraceList.tsx';
-import StatsPanel from './components/StatsPanel.tsx';
-import ChatInterface from './components/ChatInterface.tsx';
-import CostChart from './components/CostChart.tsx';
+import TraceList from './components/TraceList';
+import StatsPanel from './components/StatsPanel';
+import ChatInterface from './components/ChatInterface';
+import CostChart from './components/CostChart';
+import ConfidenceChart from './components/ConfidenceChart';
 import DatabaseConnectionManager from './components/DatabaseConnectionManager';
 import DatabaseBrowser from './components/DatabaseBrowser';
 import ApiKeyManager from './components/ApiKeyManager';
-
 
 function App() {
   const [traces, setTraces] = useState<Trace[]>([]);
@@ -17,7 +16,6 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [selectedDbConnectionId, setSelectedDbConnectionId] = useState<string | null>(null);
 
-  // Load initial data
   useEffect(() => {
     loadData();
   }, []);
@@ -49,7 +47,7 @@ function App() {
         : await api.executeQuery(prompt);
 
       console.log("Query result:", newTrace);
-      setTraces([newTrace, ...traces]);
+      setTraces((prev) => [newTrace, ...prev]);
       loadData();
       return newTrace;
     } catch (error) {
@@ -84,12 +82,11 @@ function App() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold gradient-text tracking-tight">Lighthouse</h1>
-            <p className="text-slate-400 text-sm mt-1.5 font-medium">AI observability platform • Real-time monitoring & analytics</p>
+            <p className="text-slate-400 text-sm mt-1.5 font-medium">
+              AI observability platform • Real-time monitoring & analytics
+            </p>
           </div>
-          <button
-            onClick={handleClearTraces}
-            className="btn-danger text-sm"
-          >
+          <button onClick={handleClearTraces} className="btn-danger text-sm">
             Clear All Traces
           </button>
         </div>
@@ -97,32 +94,34 @@ function App() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-8 space-y-8">
-        {/* Stats Panel */}
         <StatsPanel stats={stats} />
         <ApiKeyManager />
 
         <DatabaseBrowser connectionId={selectedDbConnectionId} />
-
-        {/* Database Connection Manager */}
         <DatabaseConnectionManager
           onSelectConnection={setSelectedDbConnectionId}
           selectedConnectionId={selectedDbConnectionId}
         />
 
         {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Chat Interface */}
-          <div className="space-y-6">
-            <ChatInterface 
-              onSubmit={handleQuerySubmit} 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          {/* Left: Chat Interface & Cost Chart */}
+          <div className="space-y-6 flex flex-col">
+            <ChatInterface
+              onSubmit={handleQuerySubmit}
               selectedDbConnectionId={selectedDbConnectionId}
             />
             <CostChart traces={traces} />
           </div>
 
-          {/* Right: Trace List */}
-          <TraceList traces={traces} />
+          {/* Right: Query History */}
+          <div className="flex flex-col min-h-0">
+            <TraceList traces={traces} />
+          </div>
         </div>
+
+        {/* Confidence Chart - Full Width */}
+        <ConfidenceChart traces={traces} />
       </div>
     </div>
   );
