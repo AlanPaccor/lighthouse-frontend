@@ -8,6 +8,7 @@ import ChatInterface from './components/ChatInterface.tsx';
 import CostChart from './components/CostChart.tsx';
 import DatabaseConnectionManager from './components/DatabaseConnectionManager';
 import DatabaseBrowser from './components/DatabaseBrowser';
+import ApiKeyManager from './components/ApiKeyManager';
 
 
 function App() {
@@ -97,7 +98,8 @@ function App() {
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Stats Panel */}
         <StatsPanel stats={stats} />
-        
+        <ApiKeyManager />
+
         <DatabaseBrowser connectionId={selectedDbConnectionId} />
 
         {/* Database Connection Manager */}
