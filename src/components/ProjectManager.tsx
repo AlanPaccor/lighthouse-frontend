@@ -24,8 +24,12 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
     try {
       const data = await projectsApi.getAll();
       setProjects(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load projects:', error);
+      // Don't show alert for auth errors - they're expected when Supabase isn't configured
+      if (!error.message?.includes('Authentication required')) {
+        // Only show alert for unexpected errors
+      }
     } finally {
       setLoading(false);
     }
@@ -45,9 +49,10 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
       setNewProjectName('');
       setNewProjectDescription('');
       setShowCreateForm(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create project:', error);
-      alert('Failed to create project. Please try again.');
+      const errorMessage = error.message || 'Failed to create project. Please try again.';
+      alert(errorMessage);
     } finally {
       setCreating(false);
     }
@@ -165,8 +170,18 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
 
         {/* Individual Projects */}
         {projects.length === 0 ? (
-          <div className="text-center py-8 text-slate-400">
-            <div className="text-sm">No projects yet. Create one to get started!</div>
+          <div className="text-center py-8">
+            <div className="text-sm text-slate-400 mb-2">No projects yet. Create one to get started!</div>
+            {!import.meta.env.VITE_SUPABASE_URL && (
+              <div className="text-xs text-yellow-400/80 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mt-3">
+                <p className="font-semibold mb-1">⚠️ Authentication Required</p>
+                <p className="text-yellow-300/80">
+                  Project creation requires authentication. Either configure Supabase or update your backend 
+                  <code className="bg-slate-800 px-1 rounded mx-1">ProjectController</code> to make 
+                  <code className="bg-slate-800 px-1 rounded mx-1">Authentication</code> parameter optional.
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           projects.map((project) => (

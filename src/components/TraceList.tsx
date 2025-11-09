@@ -159,41 +159,6 @@ export default function TraceList({ traces, checkingTraces }: TraceListProps) {
                   <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Provider</div>
                   <div className="text-2xl font-bold text-purple-400">{selectedTrace.provider}</div>
                 </div>
-                {/* Confidence Score Card */}
-                {(() => {
-                  // Extract confidence score from trace or hallucinationData
-                  let confidence: number | undefined = selectedTrace.confidenceScore;
-                  
-                  if (confidence === undefined && selectedTrace.hallucinationData) {
-                    try {
-                      const hallucinationResult = typeof selectedTrace.hallucinationData === 'string' 
-                        ? JSON.parse(selectedTrace.hallucinationData)
-                        : selectedTrace.hallucinationData;
-                      confidence = hallucinationResult.confidenceScore;
-                    } catch (e) {
-                      // Ignore parse errors
-                    }
-                  }
-                  
-                  if (confidence === undefined) return null;
-                  
-                  return (
-                    <div className={`bg-slate-900/40 p-4 rounded-xl border ${
-                      confidence >= 75 ? 'border-green-500/30' : 
-                      confidence >= 50 ? 'border-yellow-500/30' : 
-                      'border-red-500/30'
-                    } border-slate-700/50`}>
-                      <div className="text-xs text-slate-400 mb-2 font-semibold uppercase tracking-wider">Confidence</div>
-                      <div className={`text-2xl font-bold ${
-                        confidence >= 75 ? 'text-green-400' : 
-                        confidence >= 50 ? 'text-yellow-400' : 
-                        'text-red-400'
-                      }`}>
-                        {confidence.toFixed(0)}%
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
             </div>
             <div className="p-8 border-t border-slate-700/50">

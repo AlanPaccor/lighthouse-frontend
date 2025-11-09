@@ -1,0 +1,44 @@
+fix(auth): Replace Supabase Auth UI with custom form and improve error handling
+
+This commit addresses multiple authentication and API error handling issues:
+
+BREAKING CHANGES:
+- Removed @supabase/auth-ui-react dependency due to React 19 incompatibility
+- Replaced with custom email/password authentication form
+
+Authentication Improvements:
+- Made Supabase client initialization conditional (only creates client when env vars are set)
+- Updated AuthContext to gracefully handle missing Supabase configuration
+- Added bypass mode for development when Supabase is not configured
+- Fixed type imports for User and Session from @supabase/supabase-js (changed to type imports)
+- Added proper null checks throughout authentication flow
+
+API Error Handling Enhancements:
+- Enhanced projectsApi with detailed error logging and status code detection
+- Added specific error messages for 401/403 authentication errors
+- Improved error messages in ProjectManager component to show actual backend errors
+- Added helpful warning message in ProjectManager when Supabase is not configured
+- Updated all API methods to log full error details (status, statusText, response body)
+
+User Experience:
+- Added informative error screen in Dashboard when backend requires authentication
+- Improved error messages in project creation flow
+- Added visual indicators for authentication requirements
+- Better handling of network errors and failed API calls
+
+Files Changed:
+- src/lib/supabase.ts: Made client nullable and conditional
+- src/components/Auth.tsx: Replaced Auth UI component with custom form
+- src/contexts/AuthContext.tsx: Added Supabase configuration checks
+- src/services/api.ts: Enhanced error handling in projectsApi
+- src/components/ProjectManager.tsx: Added error handling and warnings
+- src/components/Dashboard.tsx: Added API error detection and user-friendly error screen
+
+Technical Details:
+- Fixed "Invalid hook call" errors caused by React 19 incompatibility
+- Resolved blank page issues when Supabase is not configured
+- Improved error propagation and user feedback
+- Added comprehensive error logging for debugging
+
+This ensures the application works in both authenticated (with Supabase) and 
+unauthenticated (development) modes, with clear error messages guiding users.
