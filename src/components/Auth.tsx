@@ -20,40 +20,56 @@ export default function AuthComponent({ onBack, onBypassAuth }: AuthComponentPro
   // Show configuration message if Supabase isn't set up
   if (!supabaseUrl || !supabaseAnonKey || !supabase) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
-        <div className="glass-card rounded-2xl p-8 w-full max-w-md shadow-xl">
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="w-full max-w-md space-y-8">
+          {/* Header */}
+          <div className="space-y-4">
+            <div className="h-px w-16 bg-foreground"></div>
+            <h1 className="text-5xl font-light text-foreground tracking-tight">
+              Lighthouse
+            </h1>
+            <p className="text-sm text-foreground/60 uppercase tracking-wider">
+              AI Observability Platform
+            </p>
+          </div>
+
+          {/* Warning */}
+          <div className="border border-foreground/20 p-6 space-y-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-foreground uppercase tracking-wider">
+                Supabase Not Configured
+              </p>
+              <p className="text-xs text-foreground/60 font-light leading-relaxed">
+                To enable authentication, please configure Supabase environment variables.
+                See SUPABASE_SETUP.md for instructions.
+              </p>
+            </div>
+          </div>
+
+          {/* Bypass button */}
+          {onBypassAuth && (
+            <div className="space-y-4">
+              <p className="text-xs text-foreground/50 font-light">
+                For development, you can access the dashboard directly:
+              </p>
+              <button
+                onClick={onBypassAuth}
+                className="group relative w-full px-8 py-4 bg-foreground text-background font-medium text-sm tracking-wide uppercase transition-all duration-300 hover:bg-foreground/90"
+              >
+                <span className="relative z-10">Continue to Dashboard</span>
+                <div className="absolute inset-0 border border-foreground translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300"></div>
+              </button>
+            </div>
+          )}
+
+          {/* Back button */}
           {onBack && (
             <button
               onClick={onBack}
-              className="mb-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-sm text-foreground/60 hover:text-foreground transition-colors uppercase tracking-wider"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Home
+              ← Back to Home
             </button>
-          )}
-          <div className="mb-6 text-center">
-            <h1 className="text-4xl font-bold gradient-text tracking-tight mb-2">Lighthouse</h1>
-            <p className="text-slate-400 text-sm">AI Observability Platform</p>
-          </div>
-          <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
-            <p className="text-yellow-400 text-sm font-medium mb-2">Supabase Not Configured</p>
-            <p className="text-yellow-300/80 text-xs">
-              To enable authentication, please configure Supabase environment variables.
-              See SUPABASE_SETUP.md for instructions.
-            </p>
-          </div>
-          {onBypassAuth && (
-            <div className="bg-slate-800/50 rounded-lg p-4 text-sm text-slate-400">
-              <p className="mb-2">For now, you can access the dashboard directly:</p>
-              <button
-                onClick={onBypassAuth}
-                className="w-full px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
-              >
-                Continue to Dashboard (Dev Mode)
-              </button>
-            </div>
           )}
         </div>
       </div>
@@ -96,69 +112,87 @@ export default function AuthComponent({ onBack, onBypassAuth }: AuthComponentPro
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4">
-      <div className="glass-card rounded-2xl p-8 w-full max-w-md shadow-xl">
-        {onBack && (
-          <button
-            onClick={onBack}
-            className="mb-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Home
-          </button>
-        )}
-        <div className="mb-6 text-center">
-          <h1 className="text-4xl font-bold gradient-text tracking-tight mb-2">Lighthouse</h1>
-          <p className="text-slate-400 text-sm">AI Observability Platform</p>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-12">
+        {/* Header */}
+        <div className="space-y-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="text-sm text-foreground/60 hover:text-foreground transition-colors uppercase tracking-wider mb-8"
+            >
+              ← Back to Home
+            </button>
+          )}
+          
+          <div className="h-px w-16 bg-foreground"></div>
+          <h1 className="text-5xl font-light text-foreground tracking-tight">
+            {isSignUp ? 'Sign Up' : 'Sign In'}
+          </h1>
+          <p className="text-sm text-foreground/60 uppercase tracking-wider">
+            Lighthouse AI Observability
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Email</label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label className="block text-xs text-foreground/60 uppercase tracking-wider font-medium">
+              Email
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
               placeholder="you@example.com"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Password</label>
+          <div className="space-y-2">
+            <label className="block text-xs text-foreground/60 uppercase tracking-wider font-medium">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
               placeholder="••••••••"
             />
           </div>
 
+          {/* Error message */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
-              {error}
+            <div className="border border-foreground/20 p-4">
+              <p className="text-xs text-foreground/80 font-light">{error}</p>
             </div>
           )}
 
+          {/* Success message */}
           {message && (
-            <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-green-400 text-sm">
-              {message}
+            <div className="border border-foreground/20 p-4">
+              <p className="text-xs text-foreground/80 font-light">{message}</p>
             </div>
           )}
 
+          {/* Submit button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-cyan-600 hover:bg-cyan-700 disabled:bg-cyan-800 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+            className="group relative w-full px-8 py-4 bg-foreground text-background font-medium text-sm tracking-wide uppercase transition-all duration-300 hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+            <span className="relative z-10">
+              {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+            </span>
+            {!loading && (
+              <div className="absolute inset-0 border border-foreground translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300"></div>
+            )}
           </button>
 
+          {/* Toggle sign up/sign in */}
           <div className="text-center">
             <button
               type="button"
@@ -167,7 +201,7 @@ export default function AuthComponent({ onBack, onBypassAuth }: AuthComponentPro
                 setError(null)
                 setMessage(null)
               }}
-              className="text-cyan-400 hover:text-cyan-300 text-sm"
+              className="text-xs text-foreground/60 hover:text-foreground transition-colors uppercase tracking-wider"
             >
               {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
             </button>
@@ -177,4 +211,3 @@ export default function AuthComponent({ onBack, onBypassAuth }: AuthComponentPro
     </div>
   )
 }
-

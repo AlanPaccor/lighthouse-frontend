@@ -26,10 +26,6 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
       setProjects(data);
     } catch (error: any) {
       console.error('Failed to load projects:', error);
-      // Don't show alert for auth errors - they're expected when Supabase isn't configured
-      if (!error.message?.includes('Authentication required')) {
-        // Only show alert for unexpected errors
-      }
     } finally {
       setLoading(false);
     }
@@ -83,24 +79,25 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
 
   if (loading) {
     return (
-      <div className="glass-card rounded-2xl p-8 shadow-xl">
-        <div className="text-center text-slate-400">Loading projects...</div>
+      <div className="bg-background border border-foreground/10 p-8">
+        <div className="text-center text-foreground/60 font-light">Loading projects...</div>
       </div>
     );
   }
 
   return (
-    <div className="glass-card rounded-2xl p-8 shadow-xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="card-header">Projects</h2>
-          <p className="card-subtitle mt-2">
+    <div className="bg-background border border-foreground/10 p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <div className="space-y-4">
+          <div className="h-px w-16 bg-foreground"></div>
+          <h2 className="text-3xl font-light text-foreground tracking-tight">Projects</h2>
+          <p className="text-sm text-foreground/60 font-light">
             Manage your projects and API keys for SDK integration
           </p>
         </div>
         <button
           onClick={() => setShowCreateForm(!showCreateForm)}
-          className="btn-primary"
+          className="px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
         >
           {showCreateForm ? 'Cancel' : '+ New Project'}
         </button>
@@ -108,77 +105,78 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
 
       {/* Create Project Form */}
       {showCreateForm && (
-        <form onSubmit={handleCreateProject} className="mb-6 p-6 bg-slate-900/60 rounded-xl border border-slate-700/50">
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-slate-300 mb-2 block font-semibold">
-                Project Name *
-              </label>
-              <input
-                type="text"
-                value={newProjectName}
-                onChange={(e) => setNewProjectName(e.target.value)}
-                className="input-field"
-                placeholder="My AI Project"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm text-slate-300 mb-2 block font-semibold">
-                Description (optional)
-              </label>
-              <textarea
-                value={newProjectDescription}
-                onChange={(e) => setNewProjectDescription(e.target.value)}
-                className="input-field"
-                placeholder="Project description..."
-                rows={3}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={creating || !newProjectName.trim()}
-              className="btn-success w-full"
-            >
-              {creating ? 'Creating...' : 'Create Project'}
-            </button>
+        <form onSubmit={handleCreateProject} className="border border-foreground/20 p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">
+              Project Name *
+            </label>
+            <input
+              type="text"
+              value={newProjectName}
+              onChange={(e) => setNewProjectName(e.target.value)}
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
+              placeholder="My AI Project"
+              required
+            />
           </div>
+          <div className="space-y-2">
+            <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">
+              Description (optional)
+            </label>
+            <textarea
+              value={newProjectDescription}
+              onChange={(e) => setNewProjectDescription(e.target.value)}
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
+              placeholder="Project description..."
+              rows={3}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={creating || !newProjectName.trim()}
+            className="group relative w-full px-8 py-4 bg-foreground text-background font-medium text-sm tracking-wide uppercase transition-all duration-300 hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span className="relative z-10">{creating ? 'Creating...' : 'Create Project'}</span>
+            {!creating && (
+              <div className="absolute inset-0 border border-foreground translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300"></div>
+            )}
+          </button>
         </form>
       )}
 
       {/* Projects List */}
-      <div className="space-y-4">
+      <div className="space-y-px bg-foreground/10">
         {/* All Projects Option */}
         <div
           onClick={() => onSelectProject?.(null)}
-          className={`p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`p-6 bg-background cursor-pointer transition-colors ${
             selectedProjectId === null
-              ? 'border-blue-500/50 bg-blue-500/10'
-              : 'border-slate-700/50 bg-slate-900/40 hover:bg-slate-800/40'
+              ? 'bg-foreground/5 border-l-4 border-foreground'
+              : 'hover:bg-muted/10'
           }`}
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-semibold text-slate-100">All Projects</div>
-              <div className="text-xs text-slate-400 mt-1">View all traces across all projects</div>
+              <div className="font-medium text-foreground">All Projects</div>
+              <div className="text-xs text-foreground/50 mt-1 font-light">View all traces across all projects</div>
             </div>
             {selectedProjectId === null && (
-              <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+              <div className="w-2 h-2 bg-foreground"></div>
             )}
           </div>
         </div>
 
         {/* Individual Projects */}
         {projects.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-sm text-slate-400 mb-2">No projects yet. Create one to get started!</div>
+          <div className="p-8 text-center bg-background">
+            <div className="text-sm text-foreground/60 mb-2 font-light">No projects yet. Create one to get started!</div>
             {!import.meta.env.VITE_SUPABASE_URL && (
-              <div className="text-xs text-yellow-400/80 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mt-3">
-                <p className="font-semibold mb-1">⚠️ Authentication Required</p>
-                <p className="text-yellow-300/80">
+              <div className="border border-foreground/20 p-4 mt-4 space-y-2">
+                <p className="text-xs font-medium text-foreground uppercase tracking-wider">Authentication Required</p>
+                <p className="text-xs text-foreground/60 font-light">
                   Project creation requires authentication. Either configure Supabase or update your backend 
-                  <code className="bg-slate-800 px-1 rounded mx-1">ProjectController</code> to make 
-                  <code className="bg-slate-800 px-1 rounded mx-1">Authentication</code> parameter optional.
+                  <code className="bg-foreground/10 px-1 font-mono text-xs">ProjectController</code> to make 
+                  <code className="bg-foreground/10 px-1 font-mono text-xs">Authentication</code> parameter optional.
                 </p>
               </div>
             )}
@@ -187,51 +185,49 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
           projects.map((project) => (
             <div
               key={project.id}
-              className={`p-4 rounded-xl border transition-all ${
+              className={`p-6 bg-background transition-colors ${
                 selectedProjectId === project.id
-                  ? 'border-blue-500/50 bg-blue-500/10'
-                  : 'border-slate-700/50 bg-slate-900/40 hover:bg-slate-800/40'
+                  ? 'bg-foreground/5 border-l-4 border-foreground'
+                  : 'hover:bg-muted/10'
               }`}
             >
-              <div className="flex items-start justify-between mb-3">
+              <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-slate-100">{project.name}</h3>
+                    <h3 className="font-medium text-foreground">{project.name}</h3>
                     {selectedProjectId === project.id && (
-                      <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-foreground/10 text-foreground px-2 py-1 uppercase tracking-wider font-medium">
                         Active
                       </span>
                     )}
                   </div>
                   {project.description && (
-                    <p className="text-sm text-slate-400 mb-3">{project.description}</p>
+                    <p className="text-sm text-foreground/60 mb-3 font-light">{project.description}</p>
                   )}
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-foreground/50 font-light">
                     Created {new Date(project.createdAt).toLocaleDateString()}
                   </div>
                 </div>
                 <button
                   onClick={() => handleDeleteProject(project.id)}
-                  className="text-red-400 hover:text-red-300 text-sm font-medium ml-4"
+                  className="text-foreground/60 hover:text-foreground text-xs font-medium uppercase tracking-wider ml-4"
                 >
                   Delete
                 </button>
               </div>
 
               {/* API Key Section */}
-              <div className="mt-4 p-3 bg-slate-950/60 rounded-lg border border-slate-700/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs text-slate-400 mb-1 font-semibold uppercase tracking-wider">
-                      API Key
-                    </div>
-                    <div className="text-sm font-mono text-slate-300 truncate">
-                      {project.apiKey}
-                    </div>
+              <div className="mt-4 p-4 bg-foreground/5 border border-foreground/10 space-y-2">
+                <div className="text-xs text-foreground/60 uppercase tracking-wider font-medium">
+                  API Key
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="text-sm font-mono text-foreground truncate">
+                    {project.apiKey}
                   </div>
                   <button
                     onClick={() => copyApiKey(project.apiKey)}
-                    className="ml-3 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg transition-colors"
+                    className="px-3 py-1.5 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5 flex-shrink-0"
                   >
                     {copiedApiKey === project.apiKey ? '✓ Copied' : 'Copy'}
                   </button>
@@ -242,7 +238,7 @@ export default function ProjectManager({ onSelectProject, selectedProjectId }: P
               {selectedProjectId !== project.id && (
                 <button
                   onClick={() => onSelectProject?.(project.id)}
-                  className="mt-3 w-full btn-secondary text-sm"
+                  className="mt-4 w-full px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
                 >
                   Select Project
                 </button>

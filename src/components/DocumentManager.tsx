@@ -47,68 +47,81 @@ export default function DocumentManager() {
   };
 
   return (
-    <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">📚 Knowledge Base</h2>
+    <div className="bg-background border border-foreground/10 p-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <div className="space-y-4">
+          <div className="h-px w-16 bg-foreground"></div>
+          <h2 className="text-3xl font-light text-foreground tracking-tight">Knowledge Base</h2>
+        </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition text-sm"
+          className="px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
         >
           {showForm ? 'Cancel' : '+ Add Document'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 space-y-3">
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm"
-            required
-          />
-          <textarea
-            placeholder="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm min-h-[100px]"
-            required
-          />
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm"
-          >
-            <option value="general">General</option>
-            <option value="about">About</option>
-            <option value="pricing">Pricing</option>
-            <option value="features">Features</option>
-            <option value="docs">Documentation</option>
-          </select>
+        <form onSubmit={handleSubmit} className="border border-foreground/20 p-6 space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">Title</label>
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">Content</label>
+            <textarea
+              placeholder="Content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light min-h-[100px]"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">Category</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground focus:outline-none focus:border-foreground transition-all duration-300 font-light"
+            >
+              <option value="general">General</option>
+              <option value="about">About</option>
+              <option value="pricing">Pricing</option>
+              <option value="features">Features</option>
+              <option value="docs">Documentation</option>
+            </select>
+          </div>
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 py-2 rounded transition text-sm"
+            className="group relative w-full px-8 py-4 bg-foreground text-background font-medium text-sm tracking-wide uppercase transition-all duration-300 hover:bg-foreground/90"
           >
-            Save Document
+            <span className="relative z-10">Save Document</span>
+            <div className="absolute inset-0 border border-foreground translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300"></div>
           </button>
         </form>
       )}
 
-      <div className="space-y-2 max-h-[400px] overflow-y-auto">
+      <div className="space-y-px bg-foreground/10">
         {documents.map((doc) => (
-          <div key={doc.id} className="bg-gray-900 p-3 rounded border border-gray-700">
+          <div key={doc.id} className="p-6 bg-background space-y-3">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="font-medium text-sm">{doc.title}</div>
-                <div className="text-xs text-gray-400 mt-1 line-clamp-2">{doc.content}</div>
+                <div className="font-medium text-foreground text-sm">{doc.title}</div>
+                <div className="text-xs text-foreground/60 mt-1 line-clamp-2 font-light">{doc.content}</div>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs bg-gray-800 px-2 py-0.5 rounded">{doc.category}</span>
+                  <span className="text-xs bg-foreground/10 text-foreground px-2 py-1 uppercase tracking-wider font-medium">{doc.category}</span>
                 </div>
               </div>
               <button
                 onClick={() => handleDelete(doc.id)}
-                className="text-red-400 hover:text-red-300 text-xs ml-2"
+                className="text-foreground/60 hover:text-foreground text-xs font-medium uppercase tracking-wider ml-2"
               >
                 Delete
               </button>
@@ -117,7 +130,7 @@ export default function DocumentManager() {
         ))}
       </div>
 
-      <div className="mt-4 text-sm text-gray-400">
+      <div className="text-xs text-foreground/50 font-light">
         {documents.length} documents in knowledge base
       </div>
     </div>

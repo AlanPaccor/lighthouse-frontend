@@ -3,12 +3,35 @@ import { useAuth } from './contexts/AuthContext';
 import LandingPage from './components/LandingPage';
 import AuthComponent from './components/Auth';
 import Dashboard from './components/Dashboard';
+import FeaturesPage from './components/FeaturesPage';
+import DocsPage from './components/DocsPage';
 
-type View = 'landing' | 'auth' | 'dashboard';
+type View = 'landing' | 'auth' | 'dashboard' | 'features' | 'docs';
 
 function App() {
   const { user, loading: authLoading } = useAuth();
-  const [currentView, setCurrentView] = useState<View>('landing');
+  const [currentView, setCurrentView] = useState<View>(() => {
+    // Check URL hash for routing
+    const hash = window.location.hash.slice(1);
+    if (hash === 'features') return 'features';
+    if (hash === 'docs') return 'docs';
+    return 'landing';
+  });
+
+  // Handle hash changes
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      if (hash === 'features') setCurrentView('features');
+      else if (hash === 'docs') setCurrentView('docs');
+      else if (hash === 'dashboard') setCurrentView('dashboard');
+      else if (hash === 'auth') setCurrentView('auth');
+      else setCurrentView('landing');
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Check if Supabase is configured
   const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
@@ -52,6 +75,34 @@ function App() {
           } else {
             // If Supabase not configured, go directly to dashboard (dev mode)
             console.log('Setting view to dashboard (dev mode)');
+            setCurrentView('dashboard');
+          }
+        }} 
+      />
+    );
+  }
+
+  if (currentView === 'features') {
+    return (
+      <FeaturesPage 
+        onNavigateToAuth={() => {
+          if (supabaseConfigured) {
+            setCurrentView('auth');
+          } else {
+            setCurrentView('dashboard');
+          }
+        }} 
+      />
+    );
+  }
+
+  if (currentView === 'docs') {
+    return (
+      <DocsPage 
+        onNavigateToAuth={() => {
+          if (supabaseConfigured) {
+            setCurrentView('auth');
+          } else {
             setCurrentView('dashboard');
           }
         }} 

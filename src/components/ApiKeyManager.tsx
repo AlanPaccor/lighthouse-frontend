@@ -78,26 +78,27 @@ export default function ApiKeyManager() {
   };
 
   return (
-    <div className="glass-card rounded-2xl p-8 shadow-xl">
-      <div className="mb-6">
-        <h2 className="card-header">API Key Configuration</h2>
-        <p className="card-subtitle mt-2">
+    <div className="bg-background border border-foreground/10 p-8 space-y-8">
+      <div className="space-y-4">
+        <div className="h-px w-16 bg-foreground"></div>
+        <h2 className="text-3xl font-light text-foreground tracking-tight">API Key Configuration</h2>
+        <p className="text-sm text-foreground/60 font-light">
           Configure your Gemini API key to use your own credits. Keys are encrypted and stored securely.
         </p>
       </div>
 
       {hasKey && (
-        <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm">
+        <div className="border border-foreground/20 p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-blue-300 mb-1.5">Active API Key</div>
-              <div className="text-xs text-slate-400 font-mono bg-slate-900/50 px-3 py-2 rounded-lg border border-slate-700/50">
+            <div className="flex-1 space-y-2">
+              <div className="text-xs text-foreground/60 uppercase tracking-wider font-medium">Active API Key</div>
+              <div className="text-sm font-mono text-foreground bg-foreground/5 px-4 py-3 border border-foreground/10">
                 {maskedKey}
               </div>
             </div>
             <button
               onClick={handleDelete}
-              className="ml-4 text-sm text-red-400 hover:text-red-300 px-4 py-2 rounded-lg hover:bg-red-500/10 transition-all border border-red-500/20 hover:border-red-500/40 font-medium"
+              className="ml-4 px-4 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
             >
               Remove
             </button>
@@ -106,44 +107,33 @@ export default function ApiKeyManager() {
       )}
 
       {message && (
-        <div className={`mb-6 p-4 rounded-xl border backdrop-blur-sm ${
+        <div className={`border p-4 ${
           message.type === 'success'
-            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-            : 'bg-red-500/10 border-red-500/30 text-red-300'
+            ? 'border-foreground/20 bg-foreground/5'
+            : 'border-foreground/20 bg-foreground/5'
         }`}>
-          <div className="flex items-center gap-2">
-            {message.type === 'success' ? (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            )}
-            <span className="font-medium">{message.text}</span>
-          </div>
+          <div className="text-xs text-foreground/80 font-light">{message.text}</div>
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-5">
-        <div>
-          <label className="text-sm text-slate-300 mb-2.5 block font-semibold">Gemini API Key</label>
+      <form onSubmit={handleSave} className="space-y-6">
+        <div className="space-y-2">
+          <label className="text-xs text-foreground/60 uppercase tracking-wider font-medium">Gemini API Key</label>
           <input
             type="password"
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder="AIzaSy..."
-            className="input-field"
+            className="w-full px-4 py-3 bg-background border border-foreground/20 text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground transition-all duration-300 font-light"
             disabled={loading}
           />
-          <div className="text-xs text-slate-500 mt-2.5">
+          <div className="text-xs text-foreground/50 font-light">
             Get your API key from{' '}
             <a
               href="https://makersuite.google.com/app/apikey"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 underline font-medium"
+              className="text-foreground/80 hover:text-foreground underline"
             >
               Google AI Studio
             </a>
@@ -153,20 +143,13 @@ export default function ApiKeyManager() {
         <button
           type="submit"
           disabled={loading || !apiKey.trim()}
-          className="btn-success w-full"
+          className="group relative w-full px-8 py-4 bg-foreground text-background font-medium text-sm tracking-wide uppercase transition-all duration-300 hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Validating & Saving...
-            </span>
-          ) : hasKey ? (
-            'Update API Key'
-          ) : (
-            'Save API Key'
+          <span className="relative z-10">
+            {loading ? 'Validating & Saving...' : hasKey ? 'Update API Key' : 'Save API Key'}
+          </span>
+          {!loading && (
+            <div className="absolute inset-0 border border-foreground translate-x-1 translate-y-1 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-300"></div>
           )}
         </button>
       </form>
