@@ -7,7 +7,7 @@ const features = [
   },
   {
     title: "Hallucination Detection",
-    description: "Validate AI responses against database context with confidence scoring (0-100%).",
+    description: "Validate AI responses against database context with confidence scoring (0-100%). Receive instant email alerts when confidence drops below 50%.",
   },
   {
     title: "Cost Analytics",

@@ -45,7 +45,7 @@ export default function FeaturesPage({ onNavigateToAuth }: { onNavigateToAuth?: 
             <div className="space-y-6">
               <div className="h-px w-12 bg-foreground"></div>
               <h2 className="text-3xl font-light text-foreground tracking-tight">Hallucination Detection</h2>
-              <div className="grid md:grid-cols-2 gap-px bg-foreground/10">
+              <div className="grid md:grid-cols-3 gap-px bg-foreground/10">
                 <div className="bg-background p-8 space-y-4">
                   <div className="text-sm font-medium text-foreground uppercase tracking-wider">Confidence Scoring</div>
                   <p className="text-sm text-foreground/60 font-light leading-relaxed">
@@ -56,6 +56,12 @@ export default function FeaturesPage({ onNavigateToAuth }: { onNavigateToAuth?: 
                   <div className="text-sm font-medium text-foreground uppercase tracking-wider">AI-Powered Review</div>
                   <p className="text-sm text-foreground/60 font-light leading-relaxed">
                     Automatic AI review of responses identifies unsupported claims and provides detailed explanations. See exactly which statements need verification.
+                  </p>
+                </div>
+                <div className="bg-background p-8 space-y-4">
+                  <div className="text-sm font-medium text-foreground uppercase tracking-wider">Email Notifications</div>
+                  <p className="text-sm text-foreground/60 font-light leading-relaxed">
+                    Get instant email alerts when hallucinations are detected (confidence below 50%). Stay informed about low-confidence responses even when you're away from the dashboard.
                   </p>
                 </div>
               </div>
