@@ -1,129 +1,36 @@
-feat(frontend): Implement architectural design system and comprehensive documentation
+feat: Add email notification settings UI and integration
 
-This commit introduces a complete architectural redesign of the Lighthouse frontend
-and adds comprehensive documentation features, creating a cohesive, minimalist
-design language throughout the application.
+Implement comprehensive notification settings interface for hallucination
+alerts, allowing users to configure email preferences directly from the
+dashboard.
 
-## Design System Overhaul
+Features:
+- Create NotificationSettings component with toggle for email notifications
+- Add "Notifications" button to Dashboard header navigation
+- Implement modal panel for notification settings (matching Docs panel design)
+- Export getAuthHeaders utility function for use across components
+- Integrate notification settings API calls (GET/PUT /api/user/preferences)
+- Add loading states, success/error messaging, and auto-dismiss notifications
+- Apply architectural design system (minimalist, consistent styling)
 
-### Architectural Design Implementation
-- Applied new architectural color palette (#EFF1ED background, #373D20 foreground)
-- Replaced all glassmorphism and gradient styles with minimalist architectural design
-- Implemented horizontal line dividers (h-px) as design elements throughout
-- Updated typography to use light font weights (font-light) and uppercase tracking
-- Replaced all blue/cyan/indigo/emerald accent colors with architectural palette
-- Removed blue gradient background animations from global CSS
+Technical Details:
+- NotificationSettings component handles user preference loading and updates
+- Modal uses backdrop blur and architectural color palette
+- API integration uses existing authentication headers
+- Graceful error handling for missing preferences (defaults to enabled)
+- Component follows existing Dashboard modal pattern for consistency
 
-### Component Redesigns
-Refactored all dashboard components to match architectural design:
-- **StatsPanel**: Grid layout with horizontal dividers, light typography
-- **ApiKeyManager**: Minimal form styling with architectural borders
-- **ChatInterface**: Clean interface with architectural button styles
-- **ProjectManager**: Structured layout with horizontal dividers and minimal borders
-- **TraceList**: Simplified list design with architectural styling
-- **HallucinationWarning**: Updated to use architectural color system
-- **CostChart**: Chart styling updated to use architectural palette
-- **ConfidenceChart**: Health score display with architectural design
-- **DatabaseBrowser**: Clean table browser with architectural borders
-- **DatabaseConnectionManager**: Structured connection manager with architectural styling
-- **DocumentManager**: Knowledge base component with architectural design
+UI/UX:
+- Clean, minimalist interface matching existing design system
+- Clear description of email notification behavior (confidence < 50%)
+- Visual feedback for enabled/disabled states
+- Responsive layout with proper spacing and typography
 
-### Dashboard Updates
-- Updated Dashboard header with architectural design (horizontal divider, light typography)
-- Redesigned loading state with architectural spinner and typography
-- Updated error state (403/auth required) with architectural layout
-- Added Docs button in header that opens comprehensive documentation modal
-- Maintained all existing functionality while applying new design
+Files Changed:
+- src/components/NotificationSettings.tsx (new)
+- src/components/Dashboard.tsx (added notification settings modal)
+- src/services/api.ts (exported getAuthHeaders function)
 
-## Documentation Features
-
-### New Pages
-- **FeaturesPage**: Comprehensive features overview with architectural design
-  - Real-time Monitoring section
-  - Hallucination Detection details
-  - Database Integration information
-  - Analytics & Visualization features
-  - Developer SDK overview
-  - Security & Authentication details
-
-- **DocsPage**: Complete documentation with detailed setup instructions
-  - Tech Stack Requirements (backend, frontend, compatible systems)
-  - Backend Setup (4 detailed steps with code examples)
-  - Frontend Setup (4 detailed steps with configuration)
-  - Dashboard Usage Guide (5 comprehensive steps)
-  - SDK Integration Guide (5 steps with JavaScript, Python, Java examples)
-  - API Reference (detailed endpoint documentation)
-
-### Documentation Modal
-- Added Docs button in Dashboard header (between email and Sign Out)
-- Implemented comprehensive documentation modal panel
-- Modal includes all content from DocsPage in scrollable format
-- Same architectural design as TraceList modal
-- Users can access full documentation without leaving dashboard
-
-## Navigation & Routing
-
-### Routing Updates
-- Extended App.tsx routing to support 'features' and 'docs' views
-- Implemented hash-based navigation for Features and Docs pages
-- Added hash change listener for seamless navigation
-- Maintained backward compatibility with existing routing
-
-### Navigation Updates
-- Updated header.tsx to include "Docs" link in navigation
-- Updated footer.tsx with links to Features and Docs pages
-- Header logo now links back to landing page
-- All navigation uses hash-based routing
-
-## Technical Improvements
-
-### CSS Updates
-- Removed invalid @import directives from index.css
-- Fixed PostCSS errors with border-border class
-- Replaced @apply directives with direct CSS variable usage
-- Removed blue gradient background and animations
-- Updated all color references to use architectural CSS variables
-
-### Component Architecture
-- Maintained all existing functionality while applying new design
-- Preserved error handling and loading states
-- Kept all API integrations intact
-- Maintained responsive design principles
-
-## Files Changed
-
-### New Components
-- src/components/FeaturesPage.tsx
-- src/components/DocsPage.tsx
-
-### Updated Components
-- src/components/Dashboard.tsx (added docs modal, updated design)
-- src/components/StatsPanel.tsx
-- src/components/ApiKeyManager.tsx
-- src/components/ChatInterface.tsx
-- src/components/ProjectManager.tsx
-- src/components/TraceList.tsx
-- src/components/HallucinationWarning.tsx
-- src/components/CostChart.tsx
-- src/components/ConfidenceChart.tsx
-- src/components/DatabaseBrowser.tsx
-- src/components/DatabaseConnectionManager.tsx
-- src/components/DocumentManager.tsx
-- src/components/header.tsx
-- src/components/footer.tsx
-- src/App.tsx (routing updates)
-- src/index.css (design system updates)
-
-## Design Principles Applied
-
-- **Minimalism**: Clean, uncluttered interfaces with purposeful spacing
-- **Architectural Elements**: Horizontal dividers as structural design elements
-- **Typography Hierarchy**: Light weights for headings, uppercase tracking for labels
-- **Color Consistency**: Single architectural palette throughout entire application
-- **Border Styling**: Minimal borders with opacity variations (foreground/10, foreground/20)
-- **Button Design**: Architectural buttons with offset border effects on hover
-
-This redesign creates a cohesive, professional design language that enhances
-usability while maintaining all existing functionality. The comprehensive
-documentation features provide users with detailed setup and integration guides
-directly accessible from the dashboard.
+This implementation provides users with control over email notifications
+for hallucination alerts while maintaining a seamless, integrated experience
+within the dashboard interface.

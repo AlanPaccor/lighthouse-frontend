@@ -11,6 +11,7 @@ import DatabaseConnectionManager from './DatabaseConnectionManager';
 import DatabaseBrowser from './DatabaseBrowser';
 import ApiKeyManager from './ApiKeyManager';
 import ProjectManager from './ProjectManager';
+import NotificationSettings from './NotificationSettings';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const checkingTracesRef = useRef<Set<string>>(new Set());
   const [apiError, setApiError] = useState<string | null>(null);
   const [showDocsPanel, setShowDocsPanel] = useState(false);
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
   useEffect(() => {
     loadDbConnections();
@@ -309,6 +311,12 @@ export default function Dashboard() {
                 {user.email}
               </div>
             )}
+            <button
+              onClick={() => setShowNotificationSettings(true)}
+              className="px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
+            >
+              Notifications
+            </button>
             <button
               onClick={() => setShowDocsPanel(true)}
               className="px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
@@ -1068,6 +1076,35 @@ X-API-Key: lh_your_api_key_here`}
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Settings Modal */}
+      {showNotificationSettings && (
+        <div
+          className="fixed inset-0 bg-foreground/80 backdrop-blur-lg flex items-center justify-center p-4 z-50"
+          onClick={() => setShowNotificationSettings(false)}
+        >
+          <div
+            className="bg-background border border-foreground/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-8 space-y-8">
+              <div className="flex items-center justify-between">
+                <div className="space-y-4">
+                  <div className="h-px w-16 bg-foreground"></div>
+                  <h2 className="text-3xl font-light text-foreground tracking-tight">Notification Settings</h2>
+                </div>
+                <button
+                  onClick={() => setShowNotificationSettings(false)}
+                  className="px-6 py-2 border border-foreground/20 text-foreground text-xs font-medium uppercase tracking-wider transition-all duration-300 hover:border-foreground hover:bg-foreground/5"
+                >
+                  Close
+                </button>
+              </div>
+              <NotificationSettings />
             </div>
           </div>
         </div>

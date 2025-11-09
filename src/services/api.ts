@@ -42,6 +42,9 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   return headers;
 }
 
+// Export getAuthHeaders for use in other components
+export { getAuthHeaders };
+
 export const api = {
   // Get all traces (with optional project filter)
   getTraces: async (projectId?: string | null): Promise<Trace[]> => {
